@@ -1,7 +1,7 @@
 "use client";
 import "leaflet/dist/leaflet.css";
 import { useEffect, useRef, useState, useCallback } from "react";
-import { useRouter, useSearchParams as useSearchParamsHook } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
 
 const TileControls = dynamic(() => import("./TileControls"), { ssr: false });
@@ -18,7 +18,7 @@ export default function MapClient() {
   const suppressOpenUntil = useRef<number>(0);
   const [tileExists, setTileExists] = useState<Record<string, boolean>>({});
   const router = useRouter();
-  const searchParams = useSearchParamsHook();
+  const searchParams = useSearchParams();
   const updateTimeoutRef = useRef<any>(undefined);
 
   useEffect(() => {
@@ -58,7 +58,7 @@ export default function MapClient() {
       
       // Update URL without triggering navigation
       const newURL = `${window.location.pathname}?${params.toString()}`;
-      window.history.replaceState({}, '', newURL);
+      router.replace(newURL);
     }, 300); // Debounce for 300ms
   }, []);
 
@@ -317,7 +317,7 @@ export default function MapClient() {
         updateURL(m);
       }
     });
-  }, [map, searchParams, updateURL, hoveredTile, tileExists, checkTileExists]);
+  }, [map, hoveredTile, tileExists, checkTileExists]);
 
   // Poll for tile generation completion
   const pollTileStatus = async (x: number, y: number, m: any, L: any) => {
